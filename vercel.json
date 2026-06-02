@@ -1,9 +1,7 @@
 {
   "functions": {
     "api/deepseek.js": {
-      "memory": 512,
-      "maxDuration": 60,
-      "runtime": "nodejs20.x"
+      "maxDuration": 60
     }
   }
 }
