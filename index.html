@@ -1427,7 +1427,7 @@ async function preGenerateAI() {
     });
 
     if (!response.ok) {
-      hideThinkingMessage();
+      if (!isAiThinking) hideThinkingMessage();
       console.error('AI pre-gen failed:', response.status);
       return;
     }
@@ -1438,11 +1438,11 @@ async function preGenerateAI() {
       pendingStreamContent = reply;
       chatHistory.push({ role: 'assistant', content: reply });
       aiPreGenDone = true;
-      hideThinkingMessage();
+      if (!isAiThinking) hideThinkingMessage();
       console.log('🔮 AI 塔罗师预生成完毕');
     }
   } catch (err) {
-    hideThinkingMessage();
+    if (!isAiThinking) hideThinkingMessage();
     console.error('AI pre-gen error:', err);
   }
 }
@@ -1453,8 +1453,11 @@ async function callDeepSeekStream(messages, existingDiv) {
   isAiThinking = true;
   $sidebarSend.disabled = true;
   $sidebarInput.disabled = true;
-  hideThinkingMessage();
-  thinkingTimer = setTimeout(() => showThinkingMessage(), 1000);
+  // Don't reset the timer if pre-gen already started one
+  if (!thinkingTimer && !document.getElementById('thinking-msg')) {
+    aiStartTime = Date.now();
+    thinkingTimer = setTimeout(() => showThinkingMessage(), 1000);
+  }
 
   const placeholder = $sidebarChat.querySelector(".system-msg");
   if (placeholder) placeholder.remove();
